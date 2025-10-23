@@ -64,6 +64,37 @@ When using Saturday as a reference, there is a significant change. By comparing 
 
 Windspeed and humidity both have a negative trend, but humidity is not significantly contributing to the model. There is a significant correlation between humidity and atemp which can account for the fact that in the presence of atemp, the humidity is not significant. 
 
+```{r echo=FALSE, results='asis'}
+library(knitr)
+
+reg_results <- data.frame(
+  Coefficient = c("(Intercept)", "seasonString", "seasonSummer", "seasonFall", "year 1", 
+                  "Febuary", "March", "April", "May", "June", "July", "August", 
+                  "September", "October", "November", "December", "Saturday", 
+                  "Few Cloudy", "Partly Cloudy", "Atemp", "Humidity", "Windspeed"),
+  Estimate = c(986.2, 672.0, 556.0, 1838.1, 1943.2, 338.1, 986.4, 1193.2, 
+               1453.4, 1286.5, 504.5, 711.2, 1626.9, 593.0, -305.7, -532.9, 
+               469.4, -529.3, -2132.6, 4890.3, -1013.6, -3259.1),
+  Std_Error = c(490.6, 395.0, 447.8, 371.3, 122.6, 295.8, 338.2, 528.9, 
+                572.3, 593.3, 658.7, 630.3, 551.2, 498.2, 480.5, 364.4, 
+                120.0, 182.6, 500.4, 993.4, 639.1, 903.0),
+  t_value = c(2.010, 1.701, 1.242, 4.951, 15.851, 1.143, 2.917, 2.256, 
+              2.539, 2.168, 0.766, 1.128, 2.951, 1.190, -0.636, -1.462, 
+              3.911, -2.899, -4.262, 4.923, -1.586, -3.609),
+  Pr = c(0.045863, 0.090560, 0.215917, 1.64e-06, 2e-16, 0.254545, 0.003971,
+         0.025214, 0.011916, 0.031389, 0.444686, 0.260620, 0.003566, 
+         0.235435, 0.525411, 0.145314, 0.000128, 0.004187, 3.20e-05, 
+         1.86e-06, 0.114429, 0.000394)
+)
+# Add significance stars
+reg_results$Significance <- cut(
+  reg_results$Pr,
+  breaks = c(-Inf, 0.001, 0.01, 0.05, 0.1, Inf),
+  labels = c("***", "**", "*", ".", "")
+)
+
+kable(reg_results, caption = "Regression Coefficients Table for Weekends", digits = 4)
+```
 -   *How do bike rentals differ within weekdays?*
 
 Linear regression model describing how the cnt (number of bike rentals) is affected by all the aforementioned variables, excluding weekends (weekdays 0 and 6) and using weekday1 as a reference.
@@ -72,6 +103,44 @@ By looking at the effect of which weekday we select at a 5% significant level, t
 
 Humidity, in this case, is significant and shows a negative trend.
 
+```{r echo=FALSE, results='asis'}
+library(knitr)
+
+reg_results <- data.frame(
+  Coefficient = c("(Intercept)", "Spring", "Summer", "Fall", "Year 1", 
+                  "February", "March", "April", "May", "June", "July", "August", 
+                  "September", "October", "November", "December", 
+                  "Tuesday", "Wednesday", "Thursday", "Friday", 
+                  "Holiday", "Few Clouds", "Partly Cloudy", 
+                  "Atemp", "Humidity", "Windspeed"),
+  Estimate = c(1705.63, 946.12, 968.06, 1429.39, 2069.16, 61.57, 396.28, 200.27, 
+               589.25, 395.28, 50.25, 550.38, 910.87, 615.74, 19.77, 136.33, 
+               104.37, 183.14, 178.43, 240.66, -600.63, -462.72, -1973.27, 
+               4527.30, -1632.65, -2073.40),
+  Std_Error = c(264.15, 195.06, 235.09, 202.81, 64.46, 160.39, 183.89, 272.33, 
+                287.97, 301.11, 337.26, 322.61, 286.89, 268.40, 256.50, 205.27, 
+                102.00, 102.28, 102.15, 102.04, 168.85, 82.34, 210.13, 467.80, 
+                324.24, 451.49),
+  t_value = c(6.457, 4.850, 4.118, 7.048, 32.099, 0.384, 2.155, 0.735, 2.046, 
+              1.313, 0.149, 1.706, 3.175, 2.294, 0.077, 0.664, 1.023, 1.791, 
+              1.747, 2.358, -3.557, -5.620, -9.391, 9.678, -5.035, -4.592),
+  Pr = c(2.55e-10, 1.65e-06, 4.48e-05, 6.12e-12, 2e-16, 0.701225, 0.031640, 
+         0.462452, 0.041260, 0.189874, 0.881618, 0.088626, 0.001592, 0.022202, 
+         0.938595, 0.506909, 0.306707, 0.073960, 0.081302, 0.018738, 0.000411, 
+         3.20e-08, 2e-16, 2e-16, 6.69e-07, 5.57e-06)
+)
+
+# Add significance stars
+reg_results$Significance <- cut(
+  reg_results$Pr,
+  breaks = c(-Inf, 0.001, 0.01, 0.05, 0.1, Inf),
+  labels = c("***", "**", "*", ".", "")
+)
+
+# Display as Markdown table
+kable(reg_results, caption = "Regression Coefficients Summary for Week Days", digits = 4)
+```
+
 -   *How do bike rentals differ between a weekday vs a weekend?*
 
 Linear regression model describing how the cnt (number of bike rentals) is affected by all the aforementioned variables, but classifying each day as either weekend or weekday and using weekday as a reference. 
@@ -79,6 +148,50 @@ Linear regression model describing how the cnt (number of bike rentals) is affec
 By using weekday as reference, moving from weekday to weekend shows a decline in bike rentals. On weekdays there are more rentals — perhaps because people use bikes more consistently for work than for leisure. 
 
 We observed that humidity, and wind speed are all significantly negatively correlated with the cnt bike rentals.
+
+```{r echo=FALSE, results='asis'}
+library(knitr)
+
+reg_results <- data.frame(
+  Coefficient = c("(Intercept)", "Atemp", "Humidity", "Windspeed", 
+                  "Spring", "Summer", "Fall", "Year 1", 
+                  "February", "March", "April", "May", "June", "July", 
+                  "August", "September", "October", "November", "December", 
+                  "Weekend", "Holiday", "Few Clouds", "Partly Cloudy"),
+  Estimate = c(1824.06, 4666.83, -1629.02, -2668.73, 
+               879.18, 859.64, 1561.56, 2024.12, 
+               143.43, 583.26, 499.70, 841.03, 658.60, 162.78, 
+               598.42, 1120.40, 587.32, -72.23, -59.64, 
+               -132.84, -653.24, -442.02, -1894.66),
+  Std_Error = c(230.47, 436.09, 294.83, 411.25, 
+                182.08, 216.07, 183.62, 58.94, 
+                145.87, 166.95, 249.84, 266.47, 277.02, 309.43, 
+                296.43, 263.29, 243.85, 233.92, 184.78, 
+                64.68, 176.05, 77.93, 198.85),
+  t_value = c(7.914, 10.702, -5.525, -6.489, 
+              4.829, 3.979, 8.504, 34.341, 
+              0.983, 3.494, 2.000, 3.156, 2.377, 0.526, 
+              2.019, 4.255, 2.409, -0.309, -0.323, 
+              -2.054, -3.710, -5.672, -9.528),
+  Pr = c(9.59e-15, 2e-16, 4.62e-08, 1.62e-10, 
+         1.69e-06, 7.65e-05, 2e-16, 2e-16, 
+         0.325835, 0.000506, 0.045871, 0.001666, 0.017696, 0.599013, 
+         0.043888, 2.37e-05, 0.016270, 0.757567, 0.746964, 
+         0.040370, 0.000223, 2.06e-08, 2e-16)
+)
+
+# Add significance stars
+reg_results$Significance <- cut(
+  reg_results$Pr,
+  breaks = c(-Inf, 0.001, 0.01, 0.05, 0.1, Inf),
+  labels = c("***", "**", "*", ".", "")
+)
+
+# Create clean markdown table
+kable(reg_results, 
+      caption = "Regression Results Including Weekday vs. Weekend Classification", 
+      digits = 4)
+```
 
 -   *How do bike rentals differ between every day?*
 
@@ -89,6 +202,57 @@ Very consistent with past models for all variables (excluding days of the week),
 With Sunday as a reference, there is a positive difference in bike rentals on all days compared to Sunday. However, only the change from Sunday and Tuesday to Saturday is significant. We hypothesize that this is because most days off are on Mondays. 
 
 Holidays show a negative trend and represent a decline in bike rentals as compared to days that are not holidays. 
+
+```{r echo=FALSE, results='asis'}
+library(knitr)
+
+# Create labeled regression summary table
+reg_results <- data.frame(
+  Coefficient = c("(Intercept)", "Atemp", "Humidity", "Windspeed",
+                  "Spring", "Summer", "Fall", "Year 1",
+                  "February", "March", "April", "May", "June", "July",
+                  "August", "September", "October", "November", "December",
+                  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
+                  "Holiday", "Few Clouds", "Partly Cloudy"),
+  Estimate = c(1419.97, 4639.41, -1516.84, -2647.09,
+               876.41, 848.80, 1578.83, 2027.87,
+               137.39, 577.61, 500.97, 839.63, 660.67, 177.75,
+               607.53, 1112.07, 566.62, -104.09, -84.48,
+               209.72, 315.13, 392.54, 394.14, 453.87, 444.32,
+               -561.17, -467.10, -1955.77),
+  Std_Error = c(238.10, 431.50, 292.96, 406.38,
+                179.85, 213.46, 181.40, 58.21,
+                144.07, 164.92, 246.92, 263.32, 273.92, 306.15,
+                293.18, 260.39, 241.00, 231.21, 182.61,
+                109.73, 107.34, 107.58, 107.70, 107.36, 106.79,
+                180.23, 77.23, 197.44),
+  t_value = c(5.964, 10.752, -5.178, -6.514,
+              4.873, 3.976, 8.704, 34.834,
+              0.954, 3.502, 2.029, 3.189, 2.412, 0.581,
+              2.072, 4.271, 2.351, -0.450, -0.463,
+              1.911, 2.936, 3.649, 3.660, 4.227, 4.161,
+              -3.114, -6.048, -9.906),
+  Pr = c(3.90e-09, 2e-16, 2.94e-07, 1.40e-10,
+         1.36e-06, 7.72e-05, 2e-16, 2e-16,
+         0.340576, 0.000490, 0.042844, 0.001493, 0.016124, 0.561682,
+         0.038611, 2.22e-05, 0.018991, 0.652716, 0.643765,
+         0.056395, 0.003435, 0.000283, 0.000272, 2.68e-05, 3.56e-05,
+         0.001922, 2.38e-09, 2e-16)
+)
+
+# Add significance stars
+reg_results$Significance <- cut(
+  reg_results$Pr,
+  breaks = c(-Inf, 0.001, 0.01, 0.05, 0.1, Inf),
+  labels = c("***", "**", "*", ".", "")
+)
+
+# Create pretty markdown table
+kable(reg_results, 
+      caption = "Regression Coefficients Summary (Including Weekday Effects)", 
+      digits = 3, 
+      align = "lrrrrc")
+```
 
 # Data Analysis Results
 
@@ -118,3 +282,7 @@ Holidays show a negative trend and represent a decline in bike rentals as compar
 
 
 # Appendix
+
+[GitHub for Code](https://github.com/rlaziz/casma575-project.git)
+
+https://github.com/rlaziz/casma575-project.git

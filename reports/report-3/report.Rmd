@@ -30,7 +30,7 @@ From our previous labs we saw that the temperature alone was explaining about 30
 
 After fitting models, we tried to plot the contribution of each variable. 
 
-Here is the AVS plot, which represents the relationship between the dependent variable given the added variable for a particular independent variable. We realized that some of the seasons created a positive, upward trend. This means they have some influence on the dependent variable. Some of the months are contributing, but we cannot pull out specific months from our data. We can see that the year greatly affects the number of bikes rented. 
+The AVS plots are visible in the images folder, accessed via the link in the appendix. They represent the relationship between the dependent variable given the added variable for a particular independent variable. We realized that some of the seasons created a positive, upward trend. This means they have some influence on the dependent variable. Some of the months are contributing, but we cannot pull out specific months from our data. We can see that the year greatly affects the number of bikes rented. 
 
 We cannot do the typical covariance matrices because our data is mostly categorical. 
 
@@ -256,18 +256,14 @@ kable(reg_results,
 
 # Data Analysis Results
 
-**Our model approximates about 85% of the variability.**
+**Our main model, model 4, approximates about 85% of the variability.**
 
-* Present the key statistics from your regression model, including coefficient estimates, p-values, and R-squared. You can format this information in tables or include the model summary output directly from R.
-
-* Create relevant visualizations, such as scatterplots with regression lines and residual diagnostic plots, to illustrate model fit.
-
-* Interpret the results of your model in the context of your research questions. Clearly explain your interpretations and findings.
+The Residuals vs. Fitted plot can be seen in the images folder in the images folder accessed via the link in the appendix section, under the name res-vs-fit.png. The residuals are mostly centered around 0, suggesting no extreme bias. There's no obvious pattern to their spread, so any heteroscedasticity is not severe. There are a few points with large negative residuals, such as points 668, 669, and 692. Analyzing the Q-Q plot in the same images folder under the name qq-res.png demonstrates the outliers are gathered in the tails, specifically the left tail. The left tail deviates significantly from the diagonal line and the upper tail does as well, but not to the same extent, suggesting normality is a fair, but imperfect assumption.
 
 # Contributions
 
 * Raul-Fikrat Azizli: Formatted report snippets into 1 final report.
-* Thomas Laz:
+* Thomas Laz: Created initial models and residual analysis.
 * Harrison Ofori:
 * Clare Oudard: Wrote up report based on what group talked about when meeting
 * Zeid Yunis: Helped formulate project concepts/ideas and submitted the final report on Blackboard.

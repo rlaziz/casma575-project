@@ -14,13 +14,13 @@ We want to explore how weather conditions (such as weather classification, tempe
 
 # Data
 We use the bike rentals dataset. 
-This is a data set that records the cnt (number of bikes that are rented) as well atemp (temperature), hum (humidity), windspeed, season (season1, 2, 3, 4 representing Winter, Spring, Summer, Fall, respectively), year (year 0 as 2011 and year 1 as 2012), month (indexed 1-12 beginning at January), weekday (indexed 0-6 starting at Sunday), holiday (0 representing not a holiday and 1 representing a holiday), weathersit (1, 2, 3 representing clear days, less clear and light rain, and cold, rainy, and snowy), casual (representing first time users), and registered (representing repeat users). 
+This is a data set that records the cnt (number of bikes that are rented) as well atemp (normalized temperature), hum (humidity), windspeed, season (season1, 2, 3, 4 representing Winter, Spring, Summer, Fall, respectively), year (year 0 as 2011 and year 1 as 2012), month (indexed 1-12 beginning at January), weekday (indexed 0-6 starting at Sunday), holiday (0 representing not a holiday and 1 representing a holiday), weathersit (1, 2, 3 representing clear days, less clear and light rain, and cold, rainy, and snowy), casual (representing first time users), and registered (representing repeat users). 
 
 We first checked the correlation between the variables:
 
 ![](./images/corr.png)
 
-We see extreme correlation between atemp and temp. We used atemp rather than temp. We don't use casual or registered because these variables are dependent variables and are heavily correlated with the cnt. We know that atemp is not independent of humidity in real life but the data does not show this, so we continue to use both.
+We see extreme correlation between atemp and temp, which is reasonable since they different scaled variables from the same source. We used atemp rather than temp. We don't use casual or registered because these variables are added to obtain count (cnt). We know that atemp and humidity are correlated same as seasons and months in real life but in this project our main purpose is to build a multiple linear model, later in our lab report we will consider model selection, so we continue to use both.
 
 # Statistical Modeling Framework
 
@@ -28,41 +28,38 @@ Our dependent variable is cnt. Our independent variables: atemp, hum, windspeed,
 
 From our previous labs we saw that the temperature alone was explaining about 30-40% of the model’s variability, so we wanted to look at adding additional variables to temperature
 
-After fitting models, we tried to plot the contribution of each variable. 
+Before moving on, we aimed to explore the differences between weekdays and weekends. As noted earlier, the dynamics of bike rentals appear to differ between weekdays and weekends. Specifically, the distribution of the number of bikes rented shows distinct patterns depending on the day type. (A plot illustrating these differences is included in the Appendix.) 
 
-The AVS plots are visible in the images folder, accessed via the link in the appendix. They represent the relationship between the dependent variable given the added variable for a particular independent variable. We realized that some of the seasons created a positive, upward trend. This means they have some influence on the dependent variable. Some of the months are contributing, but we cannot pull out specific months from our data. We can see that the year greatly affects the number of bikes rented. 
 
-We cannot do the typical covariance matrices because our data is mostly categorical. 
+We created four models with the same independent variables with slight modications: 
 
-We created four models with the same independent variables other than specified: 
+1. **Model looking only at weekends (subset of the data)**
+2. **Model looking only at weekdays (subset of the data)**
+3. **Model looking at weekend vs weekday (entire data but day type classified into weekdays and weekends)**
+4. **Model with no modifitions (data in its natural state)**
 
-1. **Model looking only at weekends**
-2. **Model looking only at weekdays**
-3. **Model looking at weekend vs weekday**
-4. **Model with no weekday vs weekend distinction**
+In all cases, there is a positive trend in bike rentals from 2011 to 2012. More people rented bikes in 2012 in every model compared to 2011, the baseline. 
 
-In all cases, there is a positive trend in bike rentals from 2011 to 2012. More people rented bikes in 2012 in every model. 
+In all cases, seasonFall shows the largest and most significant positive change compared to seasonWinter, which serves as the reference category. The positive and significant estimate indicates that bike rentals are higher in fall relative to winter.
 
-In every case, season4 experiences the most significant, positive change between winter against each season. There are more bike rentals in the fall. 
+Additionally, in every case, weathersit1 (or clear, sunny days) is the reference, and we see a significant decline in bike rentals as we transition to moving to the other weathersits, with weathersit3 (cloudy) showing a much more extreme negative jump, which we attribute to people not riding bikes in cold, rainy, snowy days. 
 
-Additionally, in every case, weathersit1 (or clear, sunny days) is the reference, and we see a significant decline in the cnt when moving to both other weathersits, with weathersit3 showing a much more extreme negative jump, which we attribute to people not riding bikes in the snow. 
+Windspeed and humidity both have negative trends, but vary in significance among models, while temperature is significantly positive across all models. 
 
-Windspeed and humidity both have negative trends, but vary in significance among models, while temperature has a significantly positive trend across all cases. 
-
-In reference to month1, January, February to October have a positive difference while there is a negative difference between January and November and December. This is consistent with our other hypotheses that people do not want to ride bikes in the winter or on averagely colder, worse-weather days.
+For months, January is set as the reference. February to October have a positive difference while there is a negative difference between January and November and December. This is consistent with our other hypotheses that people do not want to ride bikes in the winter or on averagely colder, worse-weather days.
 
 # Questions
 
-For every question, we assume independent, normally distributed variables. 
+For every question, we assume independence of the explanatory variables, residuals are normally distributed and uncorrelated. 
 
 
 -   *How do bike rentals differ within weekends?*
 
-Linear regression model describing how the cnt (number of bike rentals) is affected by all the aforementioned variables, excluding weekdays (weekdays 1-5) and using weekday0 as a reference.
+Linear regression model describing how the cnt (number of bike rentals) is affected by all the aforementioned variables, excluding weekdays (weekdays 1-5) and using weekday0 (Sunday) as a reference.
 
-When using Saturday as a reference, there is a significant change. By comparing Sunday to Saturday, there is a significant difference between the two. The cnt jumps up significantly when the model goes to Saturday. 
+When using Sunday as a reference, there is a significant change in bike rentals. By comparing Sunday to Saturday, there is a significant difference between the two. Rentals jumps up significantly when we move from Sunday to Saturday. 
 
-Windspeed and humidity both have a negative trend, but humidity is not significantly contributing to the model. There is a significant correlation between humidity and atemp which can account for the fact that in the presence of atemp, the humidity is not significant. 
+Windspeed and humidity both have a negative trend, but humidity is not significantly contributing to the model. There is a significant correlation between humidity and atemp which may account for the fact that in the presence of atemp, the humidity is not significant. This could also be due the fact that the sample size used here is small. Table 1 summarizes the output of our model.
 
 ```{r echo=FALSE, results='asis'}
 library(knitr)
@@ -97,11 +94,11 @@ kable(reg_results, caption = "Regression Coefficients Table for Weekends", digit
 ```
 -   *How do bike rentals differ within weekdays?*
 
-Linear regression model describing how the cnt (number of bike rentals) is affected by all the aforementioned variables, excluding weekends (weekdays 0 and 6) and using weekday1 as a reference.
+Linear regression model describing how the cnt (number of bike rentals) is affected by all the aforementioned variables, excluding weekends (weekdays 0 and 6) and using weekday1 (Monday) as our reference.
 
-By looking at the effect of which weekday we select at a 5% significant level, there is no significant change when we compare the other weekdays to Monday. Even though there is a difference in the bike rentals across the weekdays, the difference is not significant. If there is a five day work week (which we assume) it makes sense that there is no day with a significantly different amount of bike rentals. 
+At 5% significant level, there is no significant difference in bike rentals when we compare the other weekdays to Monday. Even though there is a difference in the bike rentals across the weekdays, the difference is not significant. Since all these days are work days, it makes sense that there is no day with a significantly different amount of bike rentals. 
 
-Humidity, in this case, is significant and shows a negative trend.
+Humidity, in this case, is significant and shows a negative trend. Summary of this model is seen in table 2.
 
 ```{r echo=FALSE, results='asis'}
 library(knitr)
@@ -145,9 +142,9 @@ kable(reg_results, caption = "Regression Coefficients Summary for Week Days", di
 
 Linear regression model describing how the cnt (number of bike rentals) is affected by all the aforementioned variables, but classifying each day as either weekend or weekday and using weekday as a reference. 
 
-By using weekday as reference, moving from weekday to weekend shows a decline in bike rentals. On weekdays there are more rentals — perhaps because people use bikes more consistently for work than for leisure. 
+By using weekday as reference, moving from weekday to weekend shows a decline in bike rentals. On weekdays there are more rentals which may be due to the fact that people use bikes more consistently for work than for leisure. 
 
-We observed that humidity, and wind speed are all significantly negatively correlated with the cnt bike rentals.
+We observed that humidity, and wind speed are all significantly negatively correlated with bike rentals.
 
 ```{r echo=FALSE, results='asis'}
 library(knitr)
@@ -201,7 +198,7 @@ Very consistent with past models for all variables (excluding days of the week),
 
 With Sunday as a reference, there is a positive difference in bike rentals on all days compared to Sunday. However, only the change from Sunday and Tuesday to Saturday is significant. We hypothesize that this is because most days off are on Mondays. 
 
-Holidays show a negative trend and represent a decline in bike rentals as compared to days that are not holidays. 
+Holidays show a negative trend and represent a decline in bike rentals as compared to days that are not holidays, which make sense as we have already noted higher differences on work days compared to none working days. 
 
 ```{r echo=FALSE, results='asis'}
 library(knitr)
@@ -256,15 +253,27 @@ kable(reg_results,
 
 # Data Analysis Results
 
-**Our main model, model 4, approximates about 85% of the variability.**
+**Our model approximates about 85% of the variability (Model 4).**
+Residuals
+| Minimum    | Q 1       | Median           | Q 3            |Maximum      |
+|------------|-----------|------------------|----------------|-------------|
+| -3967.2    | -347.7    |        69.3      |     449.1      |  2929.7     |
+
+
+Multiple R-squared: 0.8475, Adjusted R-squared: 0.8416 
+F-statistic: 144.7 on 27 and 703 DF, p-value: < 2.2e-16
+
+The regression model appears appropriate for explaining variations in daily bike rentals. With an R-squared of 0.8475 and an adjusted R-squared of 0.8416, the model accounts for a large proportion of the variability in daily bike rentals based on the data. The highly significant F-statistic (144.7, p < 2.2e-16) indicates that the predictors collectively have a meaningful relationship with bike rentals. Key factors such as temperature, year, weather conditions, and weekdays/weekends show strong significance, while some months have some individual impact. The residuals are reasonably centered around zero as daily bike rentals are hugh in scale. Overall, the model provides a reliable fit for analyzing the determinants of bike rental counts.
 
 The Residuals vs. Fitted plot can be seen in the images folder in the images folder accessed via the link in the appendix section, under the name res-vs-fit.png. The residuals are mostly centered around 0, suggesting no extreme bias. There's no obvious pattern to their spread, so any heteroscedasticity is not severe. There are a few points with large negative residuals, such as points 668, 669, and 692. Analyzing the Q-Q plot in the same images folder under the name qq-res.png demonstrates the outliers are gathered in the tails, specifically the left tail. The left tail deviates significantly from the diagonal line and the upper tail does as well, but not to the same extent, suggesting normality is a fair, but imperfect assumption.
+
+Moving forward, we would like explore how we can enhance our model through model selection techniques.
 
 # Contributions
 
 * Raul-Fikrat Azizli: Formatted report snippets into 1 final report.
-* Thomas Laz: Created initial models and residual analysis.
-* Harrison Ofori:
+* Thomas Laz: Created the initial models and residual analysis.
+* Harrison Ofori: Code, help formulate ideas and review the report.
 * Clare Oudard: Wrote up report based on what group talked about when meeting
 * Zeid Yunis: Helped formulate project concepts/ideas and submitted the final report on Blackboard.
 
